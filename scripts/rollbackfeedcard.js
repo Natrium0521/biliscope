@@ -3,6 +3,7 @@ function FeedcardManager() {
     this.forwardStack = [];
     this.backwardButton = null;
     this.forwardButton = null;
+    this.isCustomMouseListenerActive = false;
 }
 
 FeedcardManager.prototype.addButton = function (parentNode) {
@@ -42,6 +43,24 @@ FeedcardManager.prototype.addButton = function (parentNode) {
     this.forwardButton.addEventListener('click', () => {
         this.forward();
     });
+
+    const feedcardContainer = document.querySelector('.container');
+    if (feedcardContainer) {
+        feedcardContainer.addEventListener('mouseenter', (e) => {
+            if (!this.isCustomMouseListenerActive ||
+                !e.target.classList.contains('bili-video-card__image') ||
+                !e.target.closest('.feed-card'))
+                return;
+            e.target.classList.add('bili-video-card__image--hover');
+        }, { capture: true });
+        feedcardContainer.addEventListener('mouseleave', (e) => {
+            if (!this.isCustomMouseListenerActive ||
+                !e.target.classList.contains('bili-video-card__image') ||
+                !e.target.closest('.feed-card'))
+                return;
+            e.target.classList.remove('bili-video-card__image--hover');
+        }, { capture: true });
+    }
 }
 
 FeedcardManager.prototype.refreshButtonState = function () {
@@ -53,8 +72,10 @@ FeedcardManager.prototype.refreshButtonState = function () {
     }
     if (this.forwardStack.length > 0) {
         this.forwardButton.style.display = 'block';
+        this.isCustomMouseListenerActive = true;
     } else {
         this.forwardButton.style.display = 'none';
+        this.isCustomMouseListenerActive = false;
     }
 }
 
